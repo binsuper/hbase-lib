@@ -1,0 +1,26 @@
+{
+    "name": "binspuer/hbase-lib",
+    "type": "library",
+    "description": "hbase",
+    "authors": [
+        {
+            "name": "binsuper",
+            "email": "binsuper@126.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2.0",
+        "apache/thrift": "0.13.0"
+    },
+    "autoload": {
+        "classmap": [
+            "src/lib"
+        ],
+        "psr-4": {
+            "Gino\\EasyHBase\\": "src/core"
+        },
+        "files": [
+            "src/common/function.php"
+        ]
+    }
+}

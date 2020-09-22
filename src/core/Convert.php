@@ -195,23 +195,30 @@ class Convert {
     }
 
     /**
+     * 将TResult数据转换为数组
+     *
      * @param TResult $row
      * @return array
      */
     public static function listByTResult(TResult $row): array {
-        $node = ['row' => $row->row];
-        foreach ($row->columnValues as $colval) {
-            /**
-             * @var TColumnValue $colval
-             */
-            $key        = sprintf('%s:%s', $colval->family, $colval->qualifier);
-            $node[$key] = $colval->value;
+        $node = [];
+        if (!empty($row->row)) {
+            $node['row'] = $row->row;
+            foreach ($row->columnValues as $colval) {
+                /**
+                 * @var TColumnValue $colval
+                 */
+                $key                = sprintf('%s:%s', $colval->family, $colval->qualifier);
+                $node['data'][$key] = $colval->value;
+            }
         }
 
         return $node;
     }
 
     /**
+     * 将批量TResult数据转换为二维数组
+     *
      * @param TResult[] $list
      * @return array
      */

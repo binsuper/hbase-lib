@@ -164,6 +164,27 @@ class Connection {
     }
 
     /**
+     * 检测连接是否正常
+     *
+     * @return bool
+     */
+    public function isConnected(): bool {
+        return !empty($this->_transport) && $this->_transport->isOpen();
+    }
+
+    /**
+     * 重连
+     *
+     * @throws \Thrift\Exception\TTransportException
+     */
+    public function reconnect() {
+        if ($this->isConnected()) {
+            return;
+        }
+        $this->_transport->open();
+    }
+
+    /**
      * close connection
      */
     public function close() {
@@ -187,6 +208,7 @@ class Connection {
      * set debug mode before connect
      *
      * @param bool $state
+     *
      * @return $this
      */
     public function debug(bool $state) {
@@ -196,6 +218,7 @@ class Connection {
 
     /**
      * @param IHandler $handler
+     *
      * @return $this
      */
     public function setHandler(IHandler $handler) {

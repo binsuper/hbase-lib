@@ -20,6 +20,7 @@ class Convert {
      * convert object to array
      *
      * @param object|array $obj
+     *
      * @return array
      */
     public static function object2Arr($obj) {
@@ -38,6 +39,7 @@ class Convert {
 
     /**
      * @param Table $table
+     *
      * @return TTableName
      */
     public static function toTTable(Table $table): TTableName {
@@ -47,6 +49,7 @@ class Convert {
     /**
      * @param TTableName $tt
      * @param Connection $conn
+     *
      * @return Table
      */
     public static function fromTTable(TTableName $tt, Connection $conn): Table {
@@ -60,17 +63,24 @@ class Convert {
      * @param string $col
      * @param string $val
      * @param int|null $timestamp
+     *
      * @return TColumnValue
      */
-    public static function createTColumnValue(string $family, string $col, string $val, ?int $timestamp = null): TColumnValue {
+    public static function createTColumnValue(string $family, string $col, string $val, array $params = []): TColumnValue {
         $args = [
             'family'    => $family,
             'qualifier' => $col,
             'value'     => $val
         ];
 
-        if (!empty($timestamp)) {
-            $args['timestamp'] = $timestamp;
+        if (!empty($params['timestamp'])) {
+            $args['timestamp'] = $params['timestamp'];
+        }
+        if (!empty($params['tags'])) {
+            $args['tags'] = $params['tags'];
+        }
+        if (!empty($params['type'])) {
+            $args['type'] = $params['type'];
         }
 
         return new TColumnValue($args);
@@ -78,13 +88,22 @@ class Convert {
 
     /**
      * @param array $map
+     *
      * @return array
      */
     public static function map2TColumnValue(array $map): array {
         $ret = [];
         foreach ($map as $key => $val) {
             list($family, $col) = explode(':', $key);
-            $ret[] = static::createTColumnValue($family, $col, strval($val));
+            if (is_array($val)) {
+                $value = strval($val['value']);
+                unset($val['value']);
+                $params = $val;
+            } else {
+                $value  = strval($val);
+                $params = [];
+            }
+            $ret[] = static::createTColumnValue($family, $col, $value, $params);
         }
         return $ret;
     }
@@ -93,6 +112,7 @@ class Convert {
      * @param string $family
      * @param string $col
      * @param int|null $timestamp
+     *
      * @return TColumn
      */
     public static function createTColumn(string $family, string $col, ?int $timestamp = null): TColumn {
@@ -110,6 +130,7 @@ class Convert {
 
     /**
      * @param array $list
+     *
      * @return array
      */
     public static function list2TColumn(array $list): array {
@@ -123,8 +144,9 @@ class Convert {
 
     /**
      * @param string $row
-     * @param array $map key/value map, example ['family:key' => 'val']
+     * @param array $map    key/value map, example ['family:key' => 'val']
      * @param array $params example ['attributes' => Map[], 'durability' => int, 'cellVisibility' => string]
+     *
      * @return TPut
      */
     public static function createTPut(string $row, array $map, array $params = []): TPut {
@@ -147,6 +169,7 @@ class Convert {
      * @param string $row
      * @param array $list keys list, example ['family:key1', 'family:key2']
      * @param array $params
+     *
      * @return TGet
      */
     public static function createTGet(string $row, array $list, array $params = []): TGet {
@@ -177,6 +200,7 @@ class Convert {
      * @param string $row
      * @param array $list keys list, example ['family:key1', 'family:key2']
      * @param array $params
+     *
      * @return TDelete
      */
     public static function createTDelete(string $row, array $list, array $params = []): TDelete {
@@ -198,6 +222,7 @@ class Convert {
      * 将TResult数据转换为数组
      *
      * @param TResult $row
+     *
      * @return array
      */
     public static function listByTResult(TResult $row): array {
@@ -220,6 +245,7 @@ class Convert {
      * 将批量TResult数据转换为二维数组
      *
      * @param TResult[] $list
+     *
      * @return array
      */
     public static function listByTResults(array $list): array {

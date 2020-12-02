@@ -303,7 +303,7 @@ class Filter {
      *
      * @return $this
      */
-    public function ColumnRangeFilter(string $starcol, bool $s1, string $stopcol, bool $s2) {
+    public function columnRangeFilter(string $starcol, bool $s1, string $stopcol, bool $s2) {
         $this->filters[] = sprintf("ColumnRangeFilter('%s', %s, '%s', %s)", $starcol, $s1 ? 'true' : 'false', $stopcol, $s2 ? 'true' : 'false');
         return $this;
     }

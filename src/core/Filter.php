@@ -200,6 +200,48 @@ class Filter {
     }
 
     /**
+     * multi exec the method oof Filter class
+     * example: $this->multiCall('rowFilter', [['col1', 'col2', 'col3'], [Filter::OP_EQ, Filter::OP_GE, Filter::OP_GT], Filter::COMPARE_BINARY], 'or');
+     *
+     * @param string $func  method name of Filter Class
+     * @param array $params the params of method will be called
+     * @param string $glue  glue type(and | or), default is "or"
+     *
+     * @return $this
+     */
+    public function multiCall(string $func, array $params = [], string $glue = 'or') {
+        $glue = 'glue' . ucfirst(strtolower($glue));
+        return $this->$glue(function (Filter $f) use ($func, $params) {
+            $loop = 1;
+            $num  = 0;
+
+            $first_round = true;
+            while ($loop-- > 0) {
+                $func_arg = [];
+                foreach ($params as $param) {
+                    if (is_array($param)) {
+                        $func_arg[] = $param[$num];
+                        if ($first_round) {
+                            $loop        = count($param) - 1;
+                            $first_round = false;
+                        }
+                    } else {
+                        $func_arg[] = $param;
+                    }
+                }
+
+                // exec
+                call_user_func_array([$f, $func], $func_arg);
+
+                $first_round = false;
+                $num++;
+
+            }
+        });
+        return $this;
+    }
+
+    /**
      * instead of stopRow
      *
      * @TODO this method dose not working correct

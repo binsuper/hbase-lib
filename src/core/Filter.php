@@ -73,7 +73,7 @@ class Filter {
      * @return $this
      */
     public function glueAnd($callback) {
-        $obj = new self();
+        $obj = new static();
 
         call_user_func($callback, $obj);
 
@@ -90,7 +90,7 @@ class Filter {
      * @return $this
      */
     public function glueOr($callback) {
-        $obj = new self();
+        $obj = new static();
 
         call_user_func($callback, $obj);
 
@@ -110,9 +110,11 @@ class Filter {
      */
     public function prefixRowkey($prefix) {
         if (is_array($prefix)) {
-            foreach ($prefix as $node) {
-                static::prefixRowkey($node);
-            }
+            $this->glueOr(function (Filter $filter) use ($prefix) {
+                foreach ($prefix as $node) {
+                    $filter->prefixRowkey($node);
+                }
+            });
         } else {
             $this->filters[] = sprintf("PrefixFilter('%s')", $prefix);
         }

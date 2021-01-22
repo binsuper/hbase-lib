@@ -188,11 +188,23 @@ class Connection {
      * close connection
      */
     public function close() {
-        if ($this->_transport === null || !$this->_transport->isOpen()) {
-            return;
+        try {
+            if ($this->_transport !== null && $this->_transport->isOpen()) {
+                @$this->_transport->close();
+                $this->_transport = null;
+            }
+        } catch (\Throwable $ex) {
+            // nothing
         }
-        $this->_transport->close();
-        $this->_transport = null;
+        try {
+            if ($this->_socket !== null) {
+                @$this->_socket->close();
+                $this->_socket = null;
+            }
+        } catch (\Throwable $ex) {
+            // nothing
+        }
+
     }
 
     /**

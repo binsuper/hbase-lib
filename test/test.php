@@ -1,11 +1,16 @@
 <?php
 
-require_once __DIR__  . '/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use HBase\TTableDescriptor;
 use HBase\TTableName;
 use \Gino\EasyHBase\Filter;
 use \Gino\EasyHBase\ScanQuery;
+
+$a = [1];
+$b = $a;
+$b[] = 2;
+var_dump($a, $b);
 
 //print_r(diff_month_list(strtotime('2020-03-04'), strtotime('2020-08-02'), 'Ym'));
 
@@ -42,14 +47,20 @@ $conn = new \Gino\EasyHBase\Connection([
 ]);
 
 //$conn->connect();
-//$tb     = $conn->getHandler()->table('test');
+$tb = $conn->getHandler()->table('test');
 //$result = $tb->put('r3', ['cf:age' => 16])
 //             ->put('r3', ['cf:name' => 'huang1'])
 //             ->put('r4', ['cf:age' => '22'])
 //             ->put('r4', ['cf:name' => 'ren']);
-////
-//////var_dump(strtotime('+20s') . '000');
-//var_dump(time(), time2mills(strtotime('+10sec')));
+
+$tb->put('r3', [
+    'cf:name' => 'huang',
+    'cf:age'  => [
+        'value' => 18,
+        'timestamp' => 1611648673 * 2 - time()
+    ]
+]);
+
 //$tb->put('r3', [
 //    'cf:age' => [
 //        'value'     => 20,
@@ -57,8 +68,8 @@ $conn = new \Gino\EasyHBase\Connection([
 //    ],
 //    'cf:name' => 'huang2'
 //], ['timestamp' => time2mills(strtotime('-10sec'))]);
-//
-//var_dump($tb->get('r3'));
+
+var_dump($tb->get('r3'));
 
 //$tb->put('r3', ['cf:age' => 17]);
 //
@@ -80,14 +91,14 @@ $conn = new \Gino\EasyHBase\Connection([
 
 
 //$f = Filter::create()->multiCall('rowFilter', [['a', 'b', 'd'], [Filter::OP_EQ, Filter::OP_GE, Filter::OP_GT], Filter::COMPARE_BINARY]);
-$filter = Filter::create()->glueOr(function ($f){
-    $f->prefixRowkey(['r','b']);
-});
-var_dump($filter->toString());
+//$filter = Filter::create()->glueOr(function ($f){
+//    $f->prefixRowkey(['r','b']);
+//});
+//var_dump($filter->toString());
 
 //$filter = Filter::create()->prefixRowkey('2')->regexQualifier('');
-$result = $conn->getHandler()->table('test')
-               ->scanResult(ScanQuery::create()->filter($filter)->limit(100));
+//$result = $conn->getHandler()->table('test')
+//               ->scanResult(ScanQuery::create()->filter($filter)->limit(100));
 
 // $conn->getHandler()->deleteOne('test', 'r3');
 // $conn->getHandler()->deleteRows('test', ['r3', 'r4']);
@@ -114,7 +125,7 @@ $result = $conn->getHandler()->table('test')
 //                 ->regexQualifier(Filter::OP_NEQ, 'r')
 //                 ->toString();
 
-print_r($result);
+//print_r($result);
 
 
 //$tdesc            = new TTableDescriptor();

@@ -251,7 +251,9 @@ class Convert {
     public static function listByTResults(array $list): array {
         $ret = [];
         foreach ($list as $tr) {
-            $ret[$tr->row] = static::listByTResult($tr);
+            if (!empty($tr->row)) {
+                $ret[$tr->row] = static::listByTResult($tr);
+            }
         }
         return $ret;
     }
